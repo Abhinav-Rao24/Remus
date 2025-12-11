@@ -47,3 +47,8 @@ yarn-error.log*
 # Logs
 logs
 *.log
+
+# Temporary files
+temp/
+tmp/
+uploads/

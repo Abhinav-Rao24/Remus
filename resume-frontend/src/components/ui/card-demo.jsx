@@ -14,19 +14,20 @@ import { Label } from "@/components/ui/label";
 import { validateEmail } from '@/utils/helper.js';
 import { UserContext } from '@/context/UserContext.jsx';
 import axiosInstance from '@/utils/AxiosInstance.js';
-import { API_PATHS } from '@/utils/apiPaths.js';
+import { API_PATHS, BASE_URL } from '@/utils/apiPaths.js';
+import { FcGoogle } from 'react-icons/fc';
 
 export function CardDemo({ setCurrentPage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  
+
   const navigate = useNavigate();
   const { updateUser } = useContext(UserContext);
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       return;
@@ -57,6 +58,10 @@ export function CardDemo({ setCurrentPage }) {
         setError("An error occurred. Please try again.");
       }
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/api/auth/google`;
   };
 
   return (
@@ -101,12 +106,17 @@ export function CardDemo({ setCurrentPage }) {
             <button type="submit" className="btn-primary w-full">
               Login
             </button>
-            <button type="button" className="w-full btn-outline">
-              Login with Google
+            <button
+              type="button"
+              className="flex items-center justify-center w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+              onClick={handleGoogleLogin}
+            >
+              <FcGoogle className="mr-3 text-2xl" />
+              <span>Login with Google</span>
             </button>
             <p className="text-[13px] text-slate-800 text-center">
               Don't have an account?{" "}
-              <button 
+              <button
                 type="button"
                 className="font-medium text-blue-600 hover:text-blue-800 underline"
                 onClick={() => setCurrentPage("signup")}

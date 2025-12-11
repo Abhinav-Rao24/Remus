@@ -20,24 +20,26 @@ const ResumeSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    title:{
+    title: {
         type: String,
         required: true
     },
-    thumbnailLink :{type : String, default: null},
+    thumbnailLink: { type: String, default: null },
 
-    template:{theme:String, colorPalette:String},
+    latexContent: { type: String, default: '' },
 
-    profileInfo :{
+    template: { theme: String, colorPalette: String },
+
+    profileInfo: {
         profilePreviewUrl: { type: String, default: null },
-        fullName: { type: String, required: true },
-        designation: { type: String, required: true },
-        summary: {type: String},
+        fullName: { type: String, default: '' },
+        designation: { type: String, default: '' },
+        summary: { type: String },
     },
 
-    contactInfo:{
+    contactInfo: {
         email: String,
-        phone:String,
+        phone: String,
         location: String,
         linkedIn: String,
         github: String,
@@ -83,7 +85,7 @@ const ResumeSchema = new mongoose.Schema({
     interests: [String]
 },
     {
-        timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
+        timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
     }
 );
 
