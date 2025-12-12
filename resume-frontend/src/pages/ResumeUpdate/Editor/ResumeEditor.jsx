@@ -196,7 +196,7 @@ const ResumeEditor = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/dashboard')}
-            className="text-gray-600 hover:text-gray-900 transition-colors"
+            className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer hover:bg-gray-100 px-3 py-1 rounded"
           >
             ← Back
           </button>
@@ -205,21 +205,21 @@ const ResumeEditor = () => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleCompile} disabled={isCompiling}>
+          <Button variant="outline" size="sm" onClick={handleCompile} disabled={isCompiling} className="cursor-pointer">
             {isCompiling ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Play className="w-4 h-4 mr-2" />}
             Compile
           </Button>
-          <Button variant="default" size="sm" onClick={handleSave} disabled={isSaving}>
+          <Button variant="default" size="sm" onClick={handleSave} disabled={isSaving} className="cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
             Save
           </Button>
-          <Button variant="outline" size="sm" disabled={!pdfUrl} onClick={handleDownload}>
+          <Button variant="outline" size="sm" disabled={!pdfUrl} onClick={handleDownload} className="cursor-pointer">
             <FileDown className="w-4 h-4 mr-2" /> Download
           </Button>
-          <Button variant="outline" size="sm" onClick={handleATSScore}>
+          <Button variant="outline" size="sm" onClick={handleATSScore} className="cursor-pointer">
             <BarChart3 className="w-4 h-4 mr-2" /> ATS Score
           </Button>
-          <Button variant="outline" size="sm" onClick={handleAISuggestions}>
+          <Button variant="outline" size="sm" onClick={handleAISuggestions} className="cursor-pointer">
             <Sparkles className="w-4 h-4 mr-2" /> AI Suggestions
           </Button>
         </div>

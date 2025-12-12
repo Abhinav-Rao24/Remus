@@ -27,6 +27,8 @@ const ResumeSchema = new mongoose.Schema({
     thumbnailLink: { type: String, default: null },
 
     latexContent: { type: String, default: '' },
+    isTrashed: { type: Boolean, default: false },
+    trashedAt: { type: Date, default: null },
 
     template: { theme: String, colorPalette: String },
 
