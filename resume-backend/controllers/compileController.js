@@ -24,8 +24,8 @@ const compileLatex = async (req, res) => {
         await fs.writeFile(tempFile, latex, 'utf-8');
         console.log('Wrote LaTeX to:', tempFile);
 
-        // Compile LaTeX to PDF (run twice for references)
-        const pdflatexCmd = `pdflatex -interaction=nonstopmode -halt-on-error -output-directory="${tempDir}" "${tempFile}"`;
+        // Compile LaTeX to PDF (run twice for references) with SyncTeX
+        const pdflatexCmd = `pdflatex -synctex=1 -interaction=nonstopmode -halt-on-error -output-directory="${tempDir}" "${tempFile}"`;
 
         try {
             console.log('Running pdflatex first pass...');
@@ -55,14 +55,24 @@ const compileLatex = async (req, res) => {
         const pdfContent = await fs.readFile(pdfPath);
         console.log('PDF size:', pdfContent.length, 'bytes');
 
+        // Read the SyncTeX file
+        const synctexPath = path.join(tempDir, 'resume.synctex.gz');
+        let synctexContent = null;
+        try {
+            synctexContent = await fs.readFile(synctexPath);
+            console.log('SyncTeX file size:', synctexContent.length, 'bytes');
+        } catch (synctexError) {
+            console.warn('SyncTeX file not generated:', synctexError.message);
+        }
+
         // Clean up temporary files
         await fs.rm(tempDir, { recursive: true, force: true });
 
-        // Send PDF back to client
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename=resume.pdf');
-        res.setHeader('Content-Length', pdfContent.length);
-        res.send(pdfContent);
+        // Send PDF and SyncTeX data back to client
+        res.json({
+            pdf: pdfContent.toString('base64'),
+            synctex: synctexContent ? synctexContent.toString('base64') : null
+        });
 
         console.log('Compilation successful!');
 

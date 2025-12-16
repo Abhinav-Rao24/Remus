@@ -1,0 +1,57 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: remus-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: resume-builder
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - remus-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./resume-backend
+      dockerfile: Dockerfile
+    container_name: remus-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - MONGODB_URI=mongodb://mongodb:27017/resume-builder
+      - JWT_SECRET=${JWT_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - CLIENT_URL=${CLIENT_URL}
+    depends_on:
+      - mongodb
+    networks:
+      - remus-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./resume-frontend
+      dockerfile: Dockerfile
+    container_name: remus-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - remus-network
+
+networks:
+  remus-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

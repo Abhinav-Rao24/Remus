@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Split from 'react-split';
 import { Button } from "@/components/ui/button";
 import Editor from "@monaco-editor/react";
 import toast from 'react-hot-toast';
 import axiosInstance from "@/utils/AxiosInstance";
+import { parseSyncTeX, estimateLineFromPosition } from '@/utils/synctexParser';
 import '@/styles/split.css';
 import {
   FileDown,
@@ -83,12 +84,15 @@ const ResumeEditor = () => {
   const navigate = useNavigate();
   const [latexContent, setLatexContent] = useState(defaultTemplate);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [synctexData, setSynctexData] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [atsScore, setAtsScore] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [showAtsModal, setShowAtsModal] = useState(false);
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
+  const [clickToEditMode, setClickToEditMode] = useState(false);
+  const editorRef = useRef(null);
 
   // Load resume on mount
   useEffect(() => {
@@ -113,12 +117,30 @@ const ResumeEditor = () => {
     setIsCompiling(true);
     try {
       const response = await axiosInstance.post('/api/compile',
-        { latex: latexContent },
-        { responseType: 'blob' }
+        { latex: latexContent }
       );
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+
+      // Response now contains { pdf: base64, synctex: base64 }
+      const { pdf, synctex } = response.data;
+
+      // Convert base64 PDF to blob
+      const pdfBinary = atob(pdf);
+      const pdfArray = new Uint8Array(pdfBinary.length);
+      for (let i = 0; i < pdfBinary.length; i++) {
+        pdfArray[i] = pdfBinary.charCodeAt(i);
+      }
+      const pdfBlob = new Blob([pdfArray], { type: 'application/pdf' });
+
+      // Create PDF URL
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
       setPdfUrl(URL.createObjectURL(pdfBlob));
+
+      // Store SyncTeX data
+      if (synctex) {
+        setSynctexData(synctex);
+        console.log('SyncTeX data received');
+      }
+
       toast.success('Compiled successfully!');
     } catch (error) {
       console.error(error);
@@ -189,6 +211,66 @@ const ResumeEditor = () => {
     }
   };
 
+  // Handle PDF click for SyncTeX
+  const handlePdfClick = (event) => {
+    if (!editorRef.current) {
+      console.log('Editor ref not available');
+      return;
+    }
+
+    console.log('PDF clicked!');
+
+    // Get the overlay div that was clicked
+    const overlay = event.currentTarget;
+    const rect = overlay.getBoundingClientRect();
+
+    // Calculate relative position
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const relativeY = y / rect.height;
+
+    console.log('Click position:', { x, y, relativeY });
+
+    // Convert screen pixels to PDF points (A4: 595x842 points)
+    const pdfX = Math.floor((x / rect.width) * 595);
+    const pdfY = Math.floor(842 - (y / rect.height) * 842); // Flip Y-axis
+    console.log('PDF points:', { pdfX, pdfY });
+
+    let lineNumber = null;
+
+    if (synctexData) {
+      // Try SyncTeX first
+      try {
+        console.log('Trying SyncTeX...');
+        lineNumber = parseSyncTeX(synctexData, 1, pdfX, pdfY);
+        console.log('SyncTeX returned line:', lineNumber);
+      } catch (error) {
+        console.error('SyncTeX error:', error);
+      }
+    }
+
+    // Fallback to section-based
+    if (!lineNumber) {
+      console.log('Using fallback section-based navigation');
+      lineNumber = estimateLineFromPosition(latexContent, relativeY);
+      console.log('Estimated line:', lineNumber);
+    }
+
+    if (lineNumber && editorRef.current) {
+      console.log('Jumping to line:', lineNumber);
+      editorRef.current.revealLineInCenter(lineNumber);
+      editorRef.current.setPosition({ lineNumber, column: 1 });
+      editorRef.current.focus();
+      toast.success(`Jumped to line ${lineNumber}`);
+    }
+  };
+
+  // Handle editor mount
+  const handleEditorDidMount = (editor) => {
+    editorRef.current = editor;
+  };
+
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Top Toolbar */}
@@ -243,6 +325,7 @@ const ResumeEditor = () => {
               defaultLanguage="latex"
               value={latexContent}
               onChange={setLatexContent}
+              onMount={handleEditorDidMount}
               theme="vs-light"
               options={{
                 minimap: { enabled: false },
@@ -257,13 +340,34 @@ const ResumeEditor = () => {
 
           {/* PDF Preview */}
           <div className="h-full bg-gray-100 p-6 flex flex-col">
-            <div className="flex-1 bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="flex-1 bg-white shadow-lg rounded-lg overflow-hidden relative">
               {pdfUrl ? (
-                <iframe
-                  src={pdfUrl}
-                  className="w-full h-full border-none"
-                  title="PDF Preview"
-                />
+                <>
+                  {/* Toggle Button */}
+                  <button
+                    onClick={() => setClickToEditMode(!clickToEditMode)}
+                    className={`absolute top-4 right-4 z-20 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${clickToEditMode
+                      ? 'bg-amber-500 text-white hover:bg-amber-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    title={clickToEditMode ? 'Click-to-edit enabled' : 'Click-to-edit disabled'}
+                  >
+                    {clickToEditMode ? '✓ Edit Mode' : 'Edit Mode'}
+                  </button>
+
+                  <div
+                    className="relative w-full h-full"
+                    onClick={clickToEditMode ? handlePdfClick : undefined}
+                    style={{ cursor: clickToEditMode ? 'crosshair' : 'default' }}
+                  >
+                    <iframe
+                      src={pdfUrl}
+                      className="w-full h-full border-none"
+                      title="PDF Preview"
+                      style={{ pointerEvents: clickToEditMode ? 'none' : 'auto' }}
+                    />
+                  </div>
+                </>
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400 flex-col gap-4">
                   <FileDown className="w-16 h-16 opacity-20" />
