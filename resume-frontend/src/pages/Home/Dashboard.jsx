@@ -8,12 +8,25 @@ import { Empty } from "@/components/ui/empty";
 import axios from '@/utils/AxiosInstance';
 import toast from 'react-hot-toast';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'shared', 'trashed'
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [resumeToDelete, setResumeToDelete] = useState(null);
 
   useEffect(() => {
     fetchResumes();
@@ -43,12 +56,18 @@ const Dashboard = () => {
     }
   };
 
-  const handleDelete = async (id, title) => {
+  const initiateDelete = (resume) => {
+    setResumeToDelete(resume);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!resumeToDelete) return;
+
+    const { _id: id, title } = resumeToDelete;
+
     if (activeFilter === 'trashed') {
       // Permanent delete
-      if (!window.confirm(`Permanently delete "${title}"? This cannot be undone.`)) {
-        return;
-      }
       try {
         await axios.delete(`/api/resume/${id}`);
         toast.success('Project permanently deleted');
@@ -68,6 +87,8 @@ const Dashboard = () => {
         toast.error('Failed to move to trash');
       }
     }
+    setDeleteDialogOpen(false);
+    setResumeToDelete(null);
   };
 
   const handleRestore = async (id, title) => {
@@ -107,8 +128,8 @@ const Dashboard = () => {
                     key={filter.id}
                     onClick={() => setActiveFilter(filter.id)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors cursor-pointer ${activeFilter === filter.id
-                        ? 'bg-amber-50 text-amber-700 font-medium'
-                        : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-amber-50 text-amber-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-100'
                       }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -183,7 +204,7 @@ const Dashboard = () => {
                         <Button
                           variant="destructive"
                           size="icon"
-                          onClick={() => handleDelete(resume._id, resume.title)}
+                          onClick={() => initiateDelete(resume)}
                           className="cursor-pointer"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -201,7 +222,7 @@ const Dashboard = () => {
                         <Button
                           variant="destructive"
                           size="icon"
-                          onClick={() => handleDelete(resume._id, resume.title)}
+                          onClick={() => initiateDelete(resume)}
                           className="cursor-pointer"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -215,6 +236,29 @@ const Dashboard = () => {
           )}
         </main>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {activeFilter === 'trashed'
+                ? 'Permanently delete this project?'
+                : 'Move to trash?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {activeFilter === 'trashed'
+                ? `This action cannot be undone. This will permanently delete "${resumeToDelete?.title}" and remove your data from our servers.`
+                : `"${resumeToDelete?.title}" will be moved to the trash. You can restore it later.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setResumeToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              {activeFilter === 'trashed' ? 'Delete Permanently' : 'Move to Trash'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

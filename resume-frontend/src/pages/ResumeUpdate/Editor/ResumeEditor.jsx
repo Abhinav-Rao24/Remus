@@ -12,7 +12,8 @@ import {
   Play,
   Loader2,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Home
 } from "lucide-react";
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -272,36 +273,37 @@ const ResumeEditor = () => {
 
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-yellow-50">
       {/* Top Toolbar */}
-      <div className="h-16 border-b bg-white flex items-center justify-between px-6 shadow-sm z-10 shrink-0">
+      <div className="h-16 border-b bg-black flex items-center justify-between px-6 shadow-sm z-10 shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/dashboard')}
-            className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer hover:bg-gray-100 px-3 py-1 rounded"
+            className="text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer hover:bg-gray-900 p-2 rounded"
+            title="Home"
           >
-            ← Back
+            <Home className="w-5 h-5" />
           </button>
-          <div className="font-bold text-xl text-gray-800 flex items-center gap-2">
-            <span className="text-amber-500">REMUS</span> Editor
+          <div className="font-bold text-xl text-yellow-400 flex items-center gap-2">
+            <span className="text-yellow-300">REMUS</span> Editor
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleCompile} disabled={isCompiling} className="cursor-pointer">
+          <Button size="sm" onClick={handleCompile} disabled={isCompiling} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black border-none">
             {isCompiling ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Play className="w-4 h-4 mr-2" />}
             Compile
           </Button>
-          <Button variant="default" size="sm" onClick={handleSave} disabled={isSaving} className="cursor-pointer">
+          <Button size="sm" onClick={handleSave} disabled={isSaving} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black border-none">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
             Save
           </Button>
-          <Button variant="outline" size="sm" disabled={!pdfUrl} onClick={handleDownload} className="cursor-pointer">
+          <Button size="sm" disabled={!pdfUrl} onClick={handleDownload} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black border-none">
             <FileDown className="w-4 h-4 mr-2" /> Download
           </Button>
-          <Button variant="outline" size="sm" onClick={handleATSScore} className="cursor-pointer">
+          <Button size="sm" onClick={handleATSScore} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black border-none">
             <BarChart3 className="w-4 h-4 mr-2" /> ATS Score
           </Button>
-          <Button variant="outline" size="sm" onClick={handleAISuggestions} className="cursor-pointer">
+          <Button size="sm" onClick={handleAISuggestions} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black border-none">
             <Sparkles className="w-4 h-4 mr-2" /> AI Suggestions
           </Button>
         </div>
