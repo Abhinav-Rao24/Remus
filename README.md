@@ -2,9 +2,15 @@
 
 A full-stack web application for creating professional resumes with LaTeX compilation, AI-powered ATS scoring, and intelligent suggestions.
 
+## 🌐 Live Demo
+
+**[🚀 Try REMUS Live](https://remus.onrender.com)**
+
 ![Tech Stack](https://img.shields.io/badge/Stack-MERN-green)
 ![LaTeX](https://img.shields.io/badge/LaTeX-Compilation-blue)
 ![AI](https://img.shields.io/badge/AI-OpenAI-orange)
+![Deployment](https://img.shields.io/badge/Deployed-Render-46E3B7)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 
 ## ✨ Features
 
@@ -111,11 +117,33 @@ remus/
     └── public/
 ```
 
-## 🐳 Deployment
+## 🐳 Docker Deployment
 
-For production, use Docker with LaTeX pre-installed:
-- Deploy to Render, Railway, or AWS
-- Dockerfile coming soon
+The application is fully containerized and deployed on Render.
+
+### Local Testing with Docker
+
+```bash
+# Create .env file from template
+cp .env.example .env
+# Edit .env with your values
+
+# Build and run
+docker-compose up --build
+
+# Access:
+# Frontend: http://localhost
+# Backend: http://localhost:8000
+```
+
+### Production Deployment
+
+Deployed on Render with:
+- Backend: Docker container with full LaTeX environment
+- Frontend: Nginx-served React build
+- Database: MongoDB Atlas
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
 
 ## 📝 License
 
