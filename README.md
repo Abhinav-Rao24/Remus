@@ -144,12 +144,3 @@ Deployed on Render with:
 - Database: MongoDB Atlas
 
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
-
-## 📝 License
-
-MIT License
-
-## 👨‍💻 Author
-
-**Abhinav Rao**
-- GitHub: [@Abhinav-Rao24](https://github.com/Abhinav-Rao24)
