@@ -1,10 +1,10 @@
-# 🎓 REMUS - AI-Powered Resume Builder
+# REMUS - AI-Powered Resume Builder
 
 A full-stack web application for creating professional resumes with LaTeX compilation, AI-powered ATS scoring, and intelligent suggestions.
 
-## 🌐 Live Demo
+##  Live Demo
 
-**[🚀 Try REMUS Live](https://remus.onrender.com)**
+**[ Try REMUS Live](https://remus.onrender.com)**
 
 ![Tech Stack](https://img.shields.io/badge/Stack-MERN-green)
 ![LaTeX](https://img.shields.io/badge/LaTeX-Compilation-blue)
@@ -12,19 +12,19 @@ A full-stack web application for creating professional resumes with LaTeX compil
 ![Deployment](https://img.shields.io/badge/Deployed-Render-46E3B7)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 
-## ✨ Features
+##  Features
 
-- 🎨 **Overleaf-Style Editor** - Dual-pane LaTeX editor with live PDF preview
-- 🤖 **AI-Powered Features**
+-  **Overleaf-Style Editor** - Dual-pane LaTeX editor with live PDF preview
+-  **AI-Powered Features**
   - ATS (Applicant Tracking System) score analysis
   - Intelligent resume improvement suggestions via OpenAI
-- 📄 **LaTeX Compilation** - Professional PDF generation using pdflatex
-- 🔐 **Authentication** - Secure login with JWT and Google OAuth
-- 💾 **Project Management** - Save, edit, and delete multiple resume projects
-- 📱 **Responsive Design** - Works seamlessly on desktop and mobile
-- 🎯 **Real-time Preview** - See changes instantly as you edit
+-  **LaTeX Compilation** - Professional PDF generation using pdflatex
+-  **Authentication** - Secure login with JWT and Google OAuth
+-  **Project Management** - Save, edit, and delete multiple resume projects
+-  **Responsive Design** - Works seamlessly on desktop and mobile
+-  **Real-time Preview** - See changes instantly as you edit
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React + Vite
@@ -40,7 +40,7 @@ A full-stack web application for creating professional resumes with LaTeX compil
 - OpenAI API
 - LaTeX (pdflatex)
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -98,7 +98,7 @@ npm run dev
 
 5. **Access**: http://localhost:5173
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 remus/
@@ -117,7 +117,7 @@ remus/
     └── public/
 ```
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 The application is fully containerized and deployed on Render.
 
